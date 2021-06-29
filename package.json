@@ -1,0 +1,8 @@
+{
+  "name": "weekly-minutes",
+  "version": "1.0.0",
+  "description": "Automatically generate minutes for Indico weekly meetings from my recent pull requests",
+  "dependencies": {
+    "@octokit/rest": "^18.6.3"
+  }
+}
