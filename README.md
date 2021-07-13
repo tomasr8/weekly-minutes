@@ -1,11 +1,38 @@
 # weekly-minutes
-Automatically generate minutes for Indico weekly meetings from my recent pull requests
+Automatically update minutes for Indico weekly meetings from my recent pull requests
 
-Generates HTML summary of my PRs from last week.
-This HTML can be pasted directly into Indico minutes using the `source` option in the minutes editor.
+
+## What?
+
+Generates an HTML summary of my PRs from the last week and
+posts them to the appropriate contribution in the weekly
+developer meeting event.
+
+## Requirements
+
+- Node v14+
+- Indico API token with read/write access
 
 ## Usage
 
-Update the code with your Github username and run:
+Create a `config.json` file in the project with
+the following keys:
 
-`npm install && node main.js`
+```json
+{
+    "token": "indp_XXXXXXXXXXXXX",
+    "fullName": "Doe, John",
+    "githubUsername": "octocat"
+}
+```
+
+Run
+
+```
+npm install && node main.js
+```
+
+
+## TODO
+
+- include all indico repositories, e.g., newdle, ..
