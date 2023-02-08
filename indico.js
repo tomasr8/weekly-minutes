@@ -1,57 +1,35 @@
-const request = require("request")
 const chalk = require("chalk")
 
-function getEventId(token) {
-    const url = "https://indico.cern.ch/export/categ/11175.json?from=today&to=today"
-    return new Promise((resolve, reject) => {
-        request({ url, headers: { Authorization: `Bearer ${token}` } }, (error, response, body) => {
-            if (error) {
-                return reject(error)
-            }
-
-            body = JSON.parse(body)
-            const category = body.results[0]
-            return resolve(category.id)
-        })
+async function getEventId(token) {
+    const url = "https://indico.cern.ch/export/categ/15326.json?from=today&to=today"
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     })
+    return (await response.json()).results[0]
 }
 
-function getContributionId(eventId, fullName, token) {
+async function getContributionId(eventId, fullName, token) {
     const url = `https://indico.cern.ch/export/event/${eventId}.json?detail=contributions`
-
-    return new Promise((resolve, reject) => {
-        request({ url, headers: { Authorization: `Bearer ${token}` } }, (error, response, body) => {
-            if (error) {
-                return reject(error)
-            }
-
-            body = JSON.parse(body)
-            const { contributions } = body.results[0]
-            const contributionId = contributions.find(c => c.speakers[0]?.fullName === fullName).db_id
-            return resolve(contributionId)
-        })
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     })
+    const { contributions } = (await response.json()).results[0]
+    return contributions.find(c => c.speakers[0]?.fullName === fullName).db_id
 }
 
-function updateMinutes(eventId, contributionId, html, token) {
+async function updateMinutes(eventId, contributionId, html, token) {
     const url = `https://indico.cern.ch/event/${eventId}/contributions/${contributionId}/note/edit`
-
-    return new Promise((resolve, reject) => {
-        request.post(
-            {
-                url,
-                headers: { Authorization: `Bearer ${token}` },
-                form: { source: html }
-            },
-            (error, response, body) => {
-                if (error) {
-                    return reject(error)
-                }
-
-                return resolve(response.statusCode)
-            }
-        )
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            form: { source: html }
+        }
     })
+    return response.statusCode
 }
 
 module.exports = async (fullName, minutes, token) => {
